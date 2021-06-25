@@ -15,20 +15,6 @@
 
     networking = {
         extraHosts = (import ./netconf.nix).etc-hosts;
-        /*
-        let
-            nc = import ./netconf.nix { inherit pkgs; };
-            hostsLine = hostConfig: ''
-            	${hostConfig.ip} ${hostConfig.name} ${hostConfig.name}.${nc.defaults.datacenter}.local
-        	'';
-        in
-            ''
-            	${hostsLine nc.leader}
-            	${hostsLine nc.follower-a}
-            	${hostsLine nc.follower-b}
-            '';
-            */
-
         nameservers = [ "1.1.1.1" ];
 
         firewall = {

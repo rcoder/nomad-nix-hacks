@@ -2,7 +2,7 @@
     description = "Nomad+Consul lab infrastructure";
 
     inputs = {
-        nixpkgs.url = github:NixOS/nixpkgs/nixos-21.05;
+        nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
     };
 
     outputs = { self, nixpkgs }:
