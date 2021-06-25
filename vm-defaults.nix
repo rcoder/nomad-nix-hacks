@@ -23,11 +23,6 @@
         };
     };
 
-    zramSwap = {
-        enable = true;
-        memoryMax = 1024;
-    };
-
     services.openssh = {
         enable = true;
         permitRootLogin = "yes";

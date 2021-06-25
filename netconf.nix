@@ -1,9 +1,9 @@
 let
-	defaults = {
+    defaults = {
     	gatewayIp = "10.2.1.1";
     	datacenter = "homelab";
     	hostBridge = "br0";
-	};
+    };
 in rec
 {
     leader = {
@@ -43,25 +43,21 @@ in rec
 
     etc-hosts = let
     	mkHostsLine = { host, datacenter ? defaults.datacenter }:
-    		builtins.concatStringsSep " " [
-        		host.ip
-        		host.name
-        		"${host.name}.${datacenter}.local"
-    		];
+            "${host.ip} ${host.name} ${host.name}.${datacenter}.local";
     in
     	''
-        	${mkHostsLine { host = leader; }}
-        	${mkHostsLine { host = follower-a; }}
-        	${mkHostsLine { host = follower-b; }}
+            ${mkHostsLine { host = leader; }}
+            ${mkHostsLine { host = follower-a; }}
+            ${mkHostsLine { host = follower-b; }}
         '';
 
-	inherit defaults;
+    inherit defaults;
 
-	# note: this setup only works when you have a router on the gateway ip
-	# that can send traffic out of the local network segment; it probably
-	# (a bridge interface on a qemu host works well for this)
-	mkIfaceConfig = { host, gatewayIp ? defaults.gatewayIp }:
-	{
+    # note: this setup only works when you have a router on the gateway ip
+    # that can send traffic out of the local network segment; it probably
+    # (a bridge interface on a qemu host works well for this)
+    mkIfaceConfig = { host, gatewayIp ? defaults.gatewayIp }:
+    {
         hostName = host.name;
         enableIPv6 = false;
 
@@ -87,28 +83,28 @@ in rec
     };
 
     mkNomadConfig = { host, joinIps, datacenter ? defaults.datacenter }:
-		let
-			serverBlock = if host.isServer then {
-                advertise = {
-                    http = host.ip;
-                    rpc  = host.ip;
-                    serf = host.ip;
+    let
+    	serverBlock = if host.isServer then {
+            advertise = {
+                http = host.ip;
+                rpc  = host.ip;
+                serf = host.ip;
+            };
+            server = {
+                enabled = true;
+                server_join = {
+                    retry_join = joinIps;
+                    retry_interval = "30s";
+                    retry_max = "20";
                 };
-                server = {
-                    enabled = true;
-                    server_join = {
-                        retry_join = joinIps;
-                        retry_interval = "30s";
-                        retry_max = "20";
-                    };
-                };
-    		} else {
-        		client = {
-            		enabled = true;
-            		servers = joinIps;
-        		};
-    		};
-		in
+            };
+    	} else {
+            client = {
+            	enabled = true;
+            	servers = joinIps;
+            };
+    	};
+    in
         {
             enable = true;
             settings = {
